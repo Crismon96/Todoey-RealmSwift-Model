@@ -17,7 +17,7 @@ class TodoListViewController: UITableViewController {
     
     //MARK DataSource Methods here
     
-    let array = ["do things", "do more", "relax a little", "push commit on  Github"]
+    var array = ["do things", "do more", "relax a little", "push commit on  Github"]
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TodoItemCell", for: indexPath)
@@ -43,7 +43,26 @@ class TodoListViewController: UITableViewController {
         tableView.deselectRow(at: indexPath, animated: true)
         
     }
-   
+    //MARK Add-Item-Button Action
+    
+    @IBAction func addItemButton(_ sender: UIBarButtonItem) {
+        var textfield = UITextField()
+        
+        let alert = UIAlertController(title: "Got something to do?", message: "Fill in a new task.", preferredStyle: .alert)
+        let action = UIAlertAction(title: "Add item", style: .default) { (action) in
+            self.array.append(textfield.text!)
+            self.tableView.reloadData()
+        }
+        
+        alert.addTextField { (alertTextfield) in
+            alertTextfield.placeholder = "Create a new task"
+            textfield = alertTextfield
+        }
+        alert.addAction(action)
+        present(alert, animated: true, completion: nil)
+        
+    }
+    
     
     
     

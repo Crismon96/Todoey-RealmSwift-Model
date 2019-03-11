@@ -36,7 +36,12 @@
                         <barButtonItem title="Item" id="Wo0-Lx-aGZ"/>
                     </toolbarItems>
                     <navigationItem key="navigationItem" title="Todoey" id="chF-C8-GkN">
-                        <barButtonItem key="rightBarButtonItem" title="Add Item" id="9Xt-nA-cOb"/>
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="9Xt-nA-cOb">
+                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <connections>
+                                <action selector="addItemButton:" destination="hXF-tg-c5d" id="rXe-7D-OTk"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                 </tableViewController>
