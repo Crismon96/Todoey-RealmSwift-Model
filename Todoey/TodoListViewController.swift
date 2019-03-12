@@ -12,12 +12,18 @@ class TodoListViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if let itemArray = defaults.array(forKey: "toDoListArray") as? [String] {
+            array = itemArray
+        }
         // Do any additional setup after loading the view, typically from a nib.
     }
     
     //MARK DataSource Methods here
     
     var array = ["do things", "do more", "relax a little", "push commit on  Github"]
+    
+    let defaults = UserDefaults.standard
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TodoItemCell", for: indexPath)
@@ -51,6 +57,7 @@ class TodoListViewController: UITableViewController {
         let alert = UIAlertController(title: "Got something to do?", message: "Fill in a new task.", preferredStyle: .alert)
         let action = UIAlertAction(title: "Add item", style: .default) { (action) in
             self.array.append(textfield.text!)
+            self.defaults.set(self.array, forKey: "toDoListArray")
             self.tableView.reloadData()
         }
         
