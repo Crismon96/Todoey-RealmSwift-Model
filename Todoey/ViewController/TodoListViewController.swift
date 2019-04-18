@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import CoreData
 
-class TodoListViewController: UITableViewController {
+class TodoListViewController: UITableViewController, UISearchBarDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,7 +22,7 @@ class TodoListViewController: UITableViewController {
     //MARK DataSource Methods here
     let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
     var array = [Item]()
-    
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -56,8 +57,10 @@ class TodoListViewController: UITableViewController {
         let alert = UIAlertController(title: "Got something to do?", message: "Fill in a new task.", preferredStyle: .alert)
         let action = UIAlertAction(title: "Add item", style: .default) { (action) in
             
-            var newItem = Item()
+            
+            var newItem = Item(context: self.context)
             newItem.title = textfield.text!
+            newItem.done = false
             
             self.array.append(newItem)
             
@@ -78,29 +81,45 @@ class TodoListViewController: UITableViewController {
     
     
     func saveData() {
-        let encoder = PropertyListEncoder()
         
-        do {let data = try encoder.encode(array)
-            try data.write(to: dataFilePath!)
+        do { try context.save()
         }
-        catch {
-            print("Encoding error")
+        catch { print("error saving context \(error)")
         }
+        self.tableView.reloadData()
     }
     
     func loadData() {
-        print("decodeing ausgelöst")
-       if let data = try? Data(contentsOf: dataFilePath!){
-            let decoder = PropertyListDecoder()
-            do{
-               array = try decoder.decode([Item].self, from: data)
-            } catch {
-                print("error decoding array")
-            }
-            
+        let request : NSFetchRequest<Item> = Item.fetchRequest()
+        do {
+         array = try context.fetch(request)
+        }
+        catch {
+            print("error loadData: \(error)")
         }
         
+
     }
-    
 }
 
+extension TodoListViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        let request : NSFetchRequest<Item> = Item.fetchRequest()
+        
+        let predicate = NSPredicate(format: "title CONTAINS %@", searchBar.text!)
+        
+        request.predicate = predicate
+        
+        let sortDescriptor = NSSortDescriptor(key: "title", ascending: true)
+        
+        request.sortDescriptors = [sortDescriptor]
+        
+        do {
+            array = try context.fetch(request)
+    }
+        catch {
+            print("Error searchBar: \(error)")
+        }
+        tableView.reloadData()
+}
+}
